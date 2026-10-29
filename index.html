@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>NumNum - Number Match Puzzle</title>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#4f46e5">
+  <meta name="theme-color" content="#22c55e">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -47,10 +47,10 @@
   <!-- Header -->
   <header class="w-full max-w-md flex justify-between items-center my-2 px-2">
     <button id="btn-how-to" class="bg-white border border-slate-300 text-slate-700 px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm flex items-center gap-1.5 hover:bg-slate-50 active:scale-95 transition">
-      <i class="fa-solid fa-circle-question text-indigo-500"></i> How to Play
+      <i class="fa-solid fa-circle-question text-emerald-600"></i> How to Play
     </button>
-    <div class="flex items-center gap-1.5">
-      <span class="text-xl">🤪</span>
+    <div class="flex items-center gap-2">
+      <img src="logo.png" alt="NumNum Logo" class="w-8 h-8 rounded-full shadow-sm object-cover">
       <h1 class="text-xl font-black text-slate-800 tracking-tight">NumNum</h1>
     </div>
     <button id="btn-restart" class="bg-white border border-slate-300 text-slate-700 w-8 h-8 rounded-full shadow-sm flex items-center justify-center hover:bg-slate-50 active:rotate-180 transition-transform duration-300" title="Restart">
@@ -80,7 +80,7 @@
     
     <!-- Toast Notification Overlay (Center of Playboard) -->
     <div id="toast" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none transition-all duration-300 opacity-0 scale-90 bg-slate-900/90 backdrop-blur-md text-white font-bold text-sm px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-2 border border-slate-700/50">
-      <i class="fa-solid fa-face-grimace text-amber-400 text-lg"></i>
+      <i class="fa-solid fa-circle-info text-amber-400 text-lg"></i>
       <span id="toast-text">No moves left</span>
     </div>
 
@@ -97,7 +97,7 @@
     <!-- Sound Toggle -->
     <button id="btn-sound" class="flex flex-col items-center gap-1 text-slate-600 hover:text-slate-900 transition active:scale-95">
       <div class="w-11 h-11 bg-slate-100 rounded-full flex items-center justify-center border border-slate-200 text-slate-700">
-        <i id="sound-icon" class="fa-solid fa-volume-high text-base"></i>
+        <i id="sound-icon" class="fa-solid fa-volume-high text-base text-emerald-600"></i>
       </div>
       <span class="text-[10px] font-bold text-slate-500">Sound</span>
     </button>
@@ -123,26 +123,24 @@
   <!-- Modal: How To Play -->
   <div id="modal-help" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl text-center border border-slate-100 relative">
-      <div class="text-3xl mb-1">🤪🔢</div>
+      <img src="logo.png" alt="NumNum" class="w-16 h-16 rounded-2xl mx-auto mb-2 shadow-md">
       <h2 class="text-xl font-extrabold text-slate-800 mb-3">How to Play NumNum</h2>
       <div class="text-xs text-slate-600 space-y-2 text-left bg-slate-50 p-4 rounded-2xl mb-5 border border-slate-100 leading-relaxed">
         <p>• <strong>Match Pairs:</strong> Select 2 numbers that are equal (e.g. 3 & 3) or add up to 10 (e.g. 7 & 3).</p>
         <p>• <strong>Directions:</strong> Matches can be horizontal, vertical, diagonal, or wrapped from the end of one row to the start of the next.</p>
-        <p>• <strong>Empty Cells:</strong> Cleared cells are skipped when checking for matches.</p>
-        <p>• <strong>Add (+):</strong> Appends all remaining numbers to the bottom of the board (up to 5 times).</p>
+        <p>• <strong>Stage Progression:</strong> Starts with 36 tiles in Stage 1 and adds 2 extra tiles every new stage!</p>
+        <p>• <strong>Add (+):</strong> Appends all remaining active numbers to the bottom of the board (up to 5 times).</p>
       </div>
-      <button id="close-help" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-2xl shadow-lg shadow-indigo-500/20 transition active:scale-95">Got it, let's munch!</button>
+      <button id="close-help" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-2xl shadow-lg shadow-emerald-500/20 transition active:scale-95">Got it!</button>
     </div>
   </div>
 
   <!-- Modal: Game Finished / Victory -->
   <div id="modal-win" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl text-center border border-slate-100">
-      <div class="w-16 h-16 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-3">
-        <i class="fa-solid fa-trophy"></i>
-      </div>
-      <h2 class="text-2xl font-black text-slate-800">NumNum Master!</h2>
-      <p class="text-xs text-slate-500 mt-1 mb-4">You completely munched the board!</p>
+      <img src="logo.png" alt="NumNum" class="w-16 h-16 rounded-2xl mx-auto mb-3 shadow-md">
+      <h2 class="text-2xl font-black text-slate-800">Stage Cleared!</h2>
+      <p class="text-xs text-slate-500 mt-1 mb-4">Awesome job! Ready for more tiles?</p>
       <div class="bg-slate-50 p-3 rounded-2xl mb-5 border border-slate-100">
         <p class="text-[10px] font-bold text-slate-400 uppercase">Total Score</p>
         <p id="win-score-display" class="text-3xl font-black text-emerald-600">0</p>
@@ -155,10 +153,10 @@
   <div id="modal-lose" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl text-center border border-slate-100">
       <div class="w-16 h-16 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-3">
-        <i class="fa-solid fa-face-dizzy"></i>
+        <i class="fa-solid fa-ghost"></i>
       </div>
-      <h2 class="text-2xl font-black text-slate-800">Oopsie! Out of Moves</h2>
-      <p class="text-xs text-slate-500 mt-1 mb-4">No more moves or add charges left. NumNum is sad :(</p>
+      <h2 class="text-2xl font-black text-slate-800">Game Over!</h2>
+      <p class="text-xs text-slate-500 mt-1 mb-4">No more moves or add charges left.</p>
       <button id="btn-new-game" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-2xl shadow-lg shadow-slate-800/20 transition active:scale-95">New Game</button>
     </div>
   </div>
@@ -265,7 +263,7 @@
       soundEnabled = !soundEnabled;
       const icon = document.getElementById('sound-icon');
       if (soundEnabled) {
-        icon.className = 'fa-solid fa-volume-high text-base text-indigo-600';
+        icon.className = 'fa-solid fa-volume-high text-base text-emerald-600';
       } else {
         icon.className = 'fa-solid fa-volume-xmark text-base text-slate-400';
       }
@@ -273,7 +271,6 @@
 
     // Game State
     const COLS = 9;
-    const INITIAL_ROWS = 4;
     let board = [];
     let selectedIndex = null;
     let addCharges = 5;
@@ -304,10 +301,11 @@
       }, 3500);
     }
 
-    // Generate Initial Board with Guaranteed Pairs
-    function generateSolvableBoard() {
-      const totalCells = COLS * INITIAL_ROWS;
-      const totalPairs = totalCells / 2;
+    // Generate Solvable Board with Dynamic Tile Count per Stage
+    // Stage 1 = 36 tiles (18 pairs), Stage 2 = 38 tiles (19 pairs), Stage 3 = 40 tiles (20 pairs), etc.
+    function generateSolvableBoard(currentStage) {
+      const totalTiles = 36 + (currentStage - 1) * 2;
+      const totalPairs = totalTiles / 2;
       const numbers = [];
 
       for (let i = 0; i < totalPairs; i++) {
@@ -338,7 +336,7 @@
       }
       addCharges = 5;
       selectedIndex = null;
-      board = generateSolvableBoard();
+      board = generateSolvableBoard(stage);
       updateHeader();
       renderBoard();
       checkBoardState();
@@ -349,7 +347,7 @@
       stage++;
       addCharges = 5;
       selectedIndex = null;
-      board = generateSolvableBoard();
+      board = generateSolvableBoard(stage);
       updateHeader();
       renderBoard();
       checkBoardState();

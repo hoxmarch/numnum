@@ -1,8 +1,11 @@
-const CACHE_NAME = 'numnum-pwa-v1';
+const CACHE_NAME = 'numnum-pwa-v2';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
+  './logo.png',
+  './icon-192.png',
+  './icon-512.png',
   'https://cdn.tailwindcss.com',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
 ];
