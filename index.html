@@ -97,25 +97,40 @@
       0% { transform: scale(1); }
       100% { transform: scale(0.9); }
     }
+
+    button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none !important;
+    }
   </style>
 </head>
 <body class="theme-light min-h-screen flex flex-col justify-between items-center p-3 sm:p-4">
 
   <!-- Top Header -->
   <header class="w-full max-w-md flex justify-between items-center my-1 px-1">
-    <button id="btn-how-to" class="card-bg border px-4 py-2 rounded-full text-xs font-bold shadow-sm flex items-center gap-1.5 active:scale-95 transition">
-      ? How to Play
-    </button>
-    <div class="flex flex-col items-center leading-none">
-      <h1 class="brand-title text-2xl font-bold tracking-tight">NumNum</h1>
-    </div>
+    <!-- Game Title on Far Left -->
+    <h1 class="brand-title text-2xl font-bold tracking-tight">NumNum</h1>
+
+    <!-- Action Buttons Row on Far Right -->
     <div class="flex items-center gap-2">
+      <!-- How to Play Button (?) -->
+      <button id="btn-how-to" class="card-bg border w-10 h-10 rounded-full shadow-sm flex items-center justify-center font-extrabold text-sm active:scale-95 transition" title="How to Play">
+        ?
+      </button>
+
+      <!-- Undo Button -->
+      <button id="btn-undo" class="card-bg border w-10 h-10 rounded-full shadow-sm flex items-center justify-center active:scale-95 transition disabled:opacity-40" title="Undo Last Move" disabled>
+        <i class="fa-solid fa-rotate-left text-sm"></i>
+      </button>
+
       <!-- Theme Toggle Button -->
       <button id="btn-theme" class="card-bg border w-10 h-10 rounded-full shadow-sm flex items-center justify-center active:scale-95 transition" title="Toggle Night Mode">
         <i id="theme-icon" class="fa-solid fa-moon text-sm"></i>
       </button>
+
       <!-- Restart Button -->
-      <button id="btn-restart" class="card-bg border w-10 h-10 rounded-full shadow-sm flex items-center justify-center active:rotate-180 transition-transform duration-300" title="Restart">
+      <button id="btn-restart" class="card-bg border w-10 h-10 rounded-full shadow-sm flex items-center justify-center active:rotate-180 transition-transform duration-300" title="Restart Game">
         <i class="fa-solid fa-rotate-right text-sm"></i>
       </button>
     </div>
@@ -186,17 +201,18 @@
 
   <!-- Subtle Version Footer -->
   <div class="sub-text text-[10px] font-extrabold mb-1 tracking-wider">
-    NumNum PWA v3.3
+    NumNum PWA v3.4
   </div>
 
   <!-- Modal: How To Play -->
   <div id="modal-help" class="fixed inset-0 z-50 bg-[#2D2725]/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="card-bg rounded-3xl p-6 max-w-sm w-full shadow-2xl text-center border relative">
       <h2 class="brand-title text-2xl font-bold mb-1">How to Play NumNum</h2>
-      <p class="sub-text text-[10px] font-bold mb-3">Version 3.3</p>
+      <p class="sub-text text-[10px] font-bold mb-3">Version 3.4</p>
       <div class="icon-btn-bg text-xs space-y-2 text-left p-4 rounded-2xl mb-5 leading-relaxed">
         <p>• <strong>Match Pairs:</strong> Select 2 numbers that are equal (e.g. 3 & 3) or add up to 10 (e.g. 7 & 3).</p>
         <p>• <strong>Directions:</strong> Matches can be horizontal, vertical, diagonal, or wrapped from row to row.</p>
+        <p>• <strong>Undo Move:</strong> Made a mistake? Tap the <strong><i class="fa-solid fa-rotate-left"></i> Undo</strong> button to revert your last move!</p>
         <p>• <strong>Stage Progression:</strong> Starts with 36 tiles in Stage 1 and adds 2 extra tiles every stage!</p>
         <p>• <strong>Night Palette:</strong> Toggle between the Standard Pastel and Night Saturated palettes anytime.</p>
       </div>
@@ -270,6 +286,18 @@
           gain.connect(audioCtx.destination);
           osc.start(now);
           osc.stop(now + 0.2);
+        } else if (type === 'undo') {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.exponentialRampToValueAtTime(330, now + 0.12);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.12);
         } else if (type === 'add') {
           const osc = audioCtx.createOscillator();
           const gain = audioCtx.createGain();
@@ -367,6 +395,7 @@
     // Game Variables
     const COLS = 9;
     let board = [];
+    let lastState = null; // Strictly 1 single step back
     let selectedIndex = null;
     let addCharges = 5;
     let score = 0;
@@ -382,11 +411,30 @@
     const addBadge = document.getElementById('add-badge');
     const toast = document.getElementById('toast');
     const toastText = document.getElementById('toast-text');
+    const undoBtn = document.getElementById('btn-undo');
+
+    function recordSnapshot() {
+      lastState = {
+        board: JSON.parse(JSON.stringify(board)),
+        score: score,
+        addCharges: addCharges
+      };
+      updateUndoUI();
+    }
+
+    function updateUndoUI() {
+      if (lastState !== null) {
+        undoBtn.removeAttribute('disabled');
+      } else {
+        undoBtn.setAttribute('disabled', 'true');
+      }
+    }
 
     // Save & Load State
     function saveGameState() {
       const state = {
         board,
+        lastState,
         addCharges,
         score,
         stage,
@@ -407,6 +455,7 @@
         const state = JSON.parse(saved);
         if (state && Array.isArray(state.board) && state.board.length > 0) {
           board = state.board;
+          lastState = state.lastState ?? null;
           addCharges = state.addCharges ?? 5;
           score = state.score ?? 0;
           stage = state.stage ?? 1;
@@ -415,6 +464,7 @@
           
           applyTheme();
           updateSoundUI();
+          updateUndoUI();
           return true;
         }
       } catch(e) {
@@ -471,7 +521,9 @@
       }
       addCharges = 5;
       selectedIndex = null;
+      lastState = null;
       board = generateSolvableBoard(stage);
+      updateUndoUI();
       saveGameState();
       updateHeader();
       renderBoard();
@@ -482,7 +534,9 @@
       stage++;
       addCharges = 5;
       selectedIndex = null;
+      lastState = null;
       board = generateSolvableBoard(stage);
+      updateUndoUI();
       saveGameState();
       updateHeader();
       renderBoard();
@@ -623,6 +677,8 @@
         const val2 = board[idx2].val;
 
         if (isValidMatch(val1, val2) && isPathClear(idx1, idx2)) {
+          recordSnapshot(); // Record snapshot before applying move
+          
           board[idx1].cleared = true;
           board[idx2].cleared = true;
           selectedIndex = null;
@@ -696,12 +752,29 @@
       }
     }
 
+    undoBtn.addEventListener('click', () => {
+      if (!lastState) return;
+      playSound('undo');
+      board = JSON.parse(JSON.stringify(lastState.board));
+      score = lastState.score;
+      addCharges = lastState.addCharges;
+      lastState = null; // Strictly 1 move undo only
+      selectedIndex = null;
+      clearHints();
+      updateUndoUI();
+      updateHeader();
+      renderBoard();
+      saveGameState();
+    });
+
     document.getElementById('btn-add').addEventListener('click', () => {
       if (addCharges <= 0) return;
 
       const activeNumbers = board.filter(b => !b.cleared).map(b => ({ val: b.val, cleared: false }));
       if (activeNumbers.length === 0) return;
 
+      recordSnapshot(); // Record snapshot before adding numbers
+      
       addCharges--;
       playSound('add');
       board.push(...activeNumbers);
