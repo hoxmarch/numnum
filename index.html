@@ -127,9 +127,9 @@
       <h2 class="text-xl font-extrabold text-slate-800 mb-3">How to Play NumNum</h2>
       <div class="text-xs text-slate-600 space-y-2 text-left bg-slate-50 p-4 rounded-2xl mb-5 border border-slate-100 leading-relaxed">
         <p>• <strong>Match Pairs:</strong> Select 2 numbers that are equal (e.g. 3 & 3) or add up to 10 (e.g. 7 & 3).</p>
-        <p>• <strong>Directions:</strong> Matches can be horizontal, vertical, diagonal, or wrapped from the end of one row to the start of the next.</p>
-        <p>• <strong>Stage Progression:</strong> Starts with 36 tiles in Stage 1 and adds 2 extra tiles every new stage!</p>
-        <p>• <strong>Add (+):</strong> Appends all remaining active numbers to the bottom of the board (up to 5 times).</p>
+        <p>• <strong>Directions:</strong> Matches can be horizontal, vertical, diagonal, or wrapped from row to row.</p>
+        <p>• <strong>Stage Progression:</strong> Starts with 36 tiles in Stage 1 and adds 2 extra tiles every stage!</p>
+        <p>• <strong>Auto-Save:</strong> Your exact progress is automatically saved so you can resume anytime!</p>
       </div>
       <button id="close-help" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-2xl shadow-lg shadow-emerald-500/20 transition active:scale-95">Got it!</button>
     </div>
@@ -267,9 +267,10 @@
       } else {
         icon.className = 'fa-solid fa-volume-xmark text-base text-slate-400';
       }
+      saveGameState();
     });
 
-    // Game State
+    // Game State Variables
     const COLS = 9;
     let board = [];
     let selectedIndex = null;
@@ -288,6 +289,58 @@
     const toast = document.getElementById('toast');
     const toastText = document.getElementById('toast-text');
 
+    // --- SAVE / LOAD GAME STATE MECHANICS ---
+    function saveGameState() {
+      const state = {
+        board,
+        addCharges,
+        score,
+        stage,
+        soundEnabled
+      };
+      localStorage.setItem('numnum_saved_state', JSON.stringify(state));
+    }
+
+    function clearSavedState() {
+      localStorage.removeItem('numnum_saved_state');
+    }
+
+    function loadGameState() {
+      const saved = localStorage.getItem('numnum_saved_state');
+      if (!saved) return false;
+      try {
+        const state = JSON.parse(saved);
+        if (state && Array.isArray(state.board) && state.board.length > 0) {
+          board = state.board;
+          addCharges = state.addCharges ?? 5;
+          score = state.score ?? 0;
+          stage = state.stage ?? 1;
+          soundEnabled = state.soundEnabled ?? true;
+          
+          const icon = document.getElementById('sound-icon');
+          if (soundEnabled) {
+            icon.className = 'fa-solid fa-volume-high text-base text-emerald-600';
+          } else {
+            icon.className = 'fa-solid fa-volume-xmark text-base text-slate-400';
+          }
+          return true;
+        }
+      } catch(e) {
+        console.error("Error restoring saved state:", e);
+      }
+      return false;
+    }
+
+    // Auto-Save when losing focus or closing tab/app
+    window.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        saveGameState();
+      }
+    });
+    window.addEventListener('pagehide', () => {
+      saveGameState();
+    });
+
     // Display Toast
     function showToast(msg) {
       if (toastTimeout) clearTimeout(toastTimeout);
@@ -301,8 +354,7 @@
       }, 3500);
     }
 
-    // Generate Solvable Board with Dynamic Tile Count per Stage
-    // Stage 1 = 36 tiles (18 pairs), Stage 2 = 38 tiles (19 pairs), Stage 3 = 40 tiles (20 pairs), etc.
+    // Generate Solvable Board
     function generateSolvableBoard(currentStage) {
       const totalTiles = 36 + (currentStage - 1) * 2;
       const totalPairs = totalTiles / 2;
@@ -319,7 +371,6 @@
         numbers.push(val1, val2);
       }
 
-      // Shuffle numbers
       for (let i = numbers.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
@@ -337,6 +388,7 @@
       addCharges = 5;
       selectedIndex = null;
       board = generateSolvableBoard(stage);
+      saveGameState();
       updateHeader();
       renderBoard();
       checkBoardState();
@@ -348,6 +400,7 @@
       addCharges = 5;
       selectedIndex = null;
       board = generateSolvableBoard(stage);
+      saveGameState();
       updateHeader();
       renderBoard();
       checkBoardState();
@@ -394,7 +447,6 @@
     function isPathClear(idx1, idx2) {
       if (idx1 > idx2) [idx1, idx2] = [idx2, idx1];
 
-      // 1. Direct Linear Sequence
       let linearClear = true;
       for (let i = idx1 + 1; i < idx2; i++) {
         if (!board[i].cleared) {
@@ -404,14 +456,12 @@
       }
       if (linearClear) return true;
 
-      // 2. Grid Coordinates
       const r1 = Math.floor(idx1 / COLS), c1 = idx1 % COLS;
       const r2 = Math.floor(idx2 / COLS), c2 = idx2 % COLS;
 
       const dr = r2 - r1;
       const dc = c2 - c1;
 
-      // Horizontal (same row)
       if (r1 === r2) {
         let clear = true;
         for (let c = c1 + 1; c < c2; c++) {
@@ -420,7 +470,6 @@
         return clear;
       }
 
-      // Vertical (same column)
       if (c1 === c2) {
         let clear = true;
         for (let r = r1 + 1; r < r2; r++) {
@@ -429,7 +478,6 @@
         return clear;
       }
 
-      // Diagonal
       if (Math.abs(dr) === Math.abs(dc)) {
         const stepR = dr > 0 ? 1 : -1;
         const stepC = dc > 0 ? 1 : -1;
@@ -472,7 +520,6 @@
             btn.addEventListener('click', () => handleCellClick(i));
           }
         } else {
-          // Empty grid placeholder
           btn.className += ' bg-white border-slate-200 cursor-default opacity-40';
         }
 
@@ -500,7 +547,6 @@
         const val2 = board[idx2].val;
 
         if (isValidMatch(val1, val2) && isPathClear(idx1, idx2)) {
-          // Successful Match
           board[idx1].cleared = true;
           board[idx2].cleared = true;
           selectedIndex = null;
@@ -515,9 +561,9 @@
           updateHeader();
           checkAndRemoveFullRows();
           renderBoard();
+          saveGameState();
           checkBoardState();
         } else {
-          // Invalid Match
           selectedIndex = idx;
           playSound('select');
           renderBoard();
@@ -557,7 +603,7 @@
       const active = board.filter(b => !b.cleared);
 
       if (active.length === 0) {
-        // Victory
+        clearSavedState();
         playSound('win');
         document.getElementById('win-score-display').textContent = score;
         document.getElementById('modal-win').classList.remove('hidden');
@@ -567,7 +613,7 @@
       const matches = findAllMatches();
       if (matches.length === 0) {
         if (addCharges === 0) {
-          // Loss
+          clearSavedState();
           playSound('lose');
           document.getElementById('modal-lose').classList.remove('hidden');
         } else {
@@ -590,6 +636,7 @@
       clearHints();
       updateHeader();
       renderBoard();
+      saveGameState();
       checkBoardState();
     });
 
@@ -633,8 +680,14 @@
       initGame(false);
     });
 
-    // Initial Startup
-    initGame(false);
+    // Startup Execution: Restore saved session if available, otherwise fresh game
+    if (loadGameState()) {
+      updateHeader();
+      renderBoard();
+      checkBoardState();
+    } else {
+      initGame(false);
+    }
   </script>
 </body>
 </html>
