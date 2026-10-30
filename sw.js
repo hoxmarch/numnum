@@ -1,13 +1,11 @@
-const CACHE_NAME = 'numnum-pwa-v3.1';
+const CACHE_NAME = 'numnum-pwa-v3.3';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './logo.png',
-  './icon-192.png',
-  './icon-512.png',
   'https://cdn.tailwindcss.com',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
+  'https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@700;800;900&display=swap'
 ];
 
 self.addEventListener('install', (e) => {

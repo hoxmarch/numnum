@@ -5,180 +5,239 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>NumNum - Number Match Puzzle</title>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#22c55e">
+  <meta name="theme-color" content="#FBF3EB">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="NumNum">
   <link rel="apple-touch-icon" href="icon-192.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
       touch-action: manipulation;
       -webkit-user-select: none;
       user-select: none;
-      background-color: #f8fafc;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
+
+    /* Light Theme (Default) */
+    body.theme-light {
+      background-color: #FBF3EB;
+      color: #3D3532;
+    }
+    .theme-light .tile-1 { background-color: #F6B8B0; color: #2D2725; }
+    .theme-light .tile-2 { background-color: #F9D3A0; color: #2D2725; }
+    .theme-light .tile-3 { background-color: #F3E6A0; color: #2D2725; }
+    .theme-light .tile-4 { background-color: #BFE3B4; color: #2D2725; }
+    .theme-light .tile-5 { background-color: #A9DDD6; color: #2D2725; }
+    .theme-light .tile-6 { background-color: #AECBF2; color: #2D2725; }
+    .theme-light .tile-7 { background-color: #C8BDF0; color: #2D2725; }
+    .theme-light .tile-8 { background-color: #EEB8DC; color: #2D2725; }
+    .theme-light .tile-9 { background-color: #D8C3B0; color: #2D2725; }
+
+    .theme-light .tile-cleared { background-color: #EFE4D8 !important; color: #B2A8A2 !important; }
+    .theme-light .slot-empty { border: 2px dashed #E5D7CA; }
+    .theme-light .card-bg { background-color: #FFFFFF; border-color: #F3E7DC; }
+    .theme-light .sub-text { color: #9E928A; }
+    .theme-light .icon-btn-bg { background-color: #F2E8DF; color: #5C504A; }
+    .theme-light .accent-btn { background-color: #EEAD8A; color: #FFFFFF; }
+
+    /* Night Theme (Saturated Palette - Variant C) */
+    body.theme-night {
+      background-color: #231F20;
+      color: #F5EBE6;
+    }
+    .theme-night .tile-1 { background-color: #F28C82; color: #1E1A18; }
+    .theme-night .tile-2 { background-color: #F5B35E; color: #1E1A18; }
+    .theme-night .tile-3 { background-color: #E8D45E; color: #1E1A18; }
+    .theme-night .tile-4 { background-color: #86CC7A; color: #1E1A18; }
+    .theme-night .tile-5 { background-color: #5CC8BC; color: #1E1A18; }
+    .theme-night .tile-6 { background-color: #7AAEF0; color: #1E1A18; }
+    .theme-night .tile-7 { background-color: #A594F0; color: #1E1A18; }
+    .theme-night .tile-8 { background-color: #EC8CC8; color: #1E1A18; }
+    .theme-night .tile-9 { background-color: #C4A58A; color: #1E1A18; }
+
+    .theme-night .tile-cleared { background-color: #36302E !important; color: #6E6460 !important; }
+    .theme-night .slot-empty { border: 2px dashed #3D3532; }
+    .theme-night .card-bg { background-color: #2D2725; border-color: #3D3532; }
+    .theme-night .sub-text { color: #B2A8A2; }
+    .theme-night .icon-btn-bg { background-color: #3D3532; color: #E5D7CA; }
+    .theme-night .accent-btn { background-color: #E89A70; color: #FFFFFF; }
+
+    .brand-title {
+      font-family: 'Fredoka', 'Nunito', sans-serif;
+    }
+    
     .grid-cell {
       aspect-ratio: 1;
-      transition: all 0.15s ease;
-      border: 1px solid #cbd5e1;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      border-radius: 0.75rem;
     }
+
     .cell-selected {
-      background-color: #3b82f6 !important;
-      color: white !important;
-      transform: scale(0.92);
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+      transform: scale(0.88) !important;
+      box-shadow: 0 0 0 4px #2D2725, 0 4px 12px rgba(0,0,0,0.2) !important;
+      z-index: 10;
     }
+    .theme-night .cell-selected {
+      box-shadow: 0 0 0 4px #FFFFFF, 0 4px 12px rgba(0,0,0,0.5) !important;
+    }
+
     .cell-hint {
-      animation: pulse-hint 1s infinite alternate;
-      background-color: #fef08a !important;
+      animation: pulse-hint 0.8s infinite alternate;
+      box-shadow: 0 0 0 4px #F59E0B !important;
     }
+
     @keyframes pulse-hint {
       0% { transform: scale(1); }
-      100% { transform: scale(0.92); box-shadow: 0 0 10px #eab308; }
+      100% { transform: scale(0.9); }
     }
   </style>
 </head>
-<body class="bg-slate-100 min-h-screen flex flex-col justify-between items-center p-2 sm:p-4 text-slate-800">
+<body class="theme-light min-h-screen flex flex-col justify-between items-center p-3 sm:p-4">
 
-  <!-- Header -->
-  <header class="w-full max-w-md flex justify-between items-center my-2 px-2">
-    <button id="btn-how-to" class="bg-white border border-slate-300 text-slate-700 px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm flex items-center gap-1.5 hover:bg-slate-50 active:scale-95 transition">
-      <i class="fa-solid fa-circle-question text-emerald-600"></i> How to Play
+  <!-- Top Header -->
+  <header class="w-full max-w-md flex justify-between items-center my-1 px-1">
+    <button id="btn-how-to" class="card-bg border px-4 py-2 rounded-full text-xs font-bold shadow-sm flex items-center gap-1.5 active:scale-95 transition">
+      ? How to Play
     </button>
-    <div class="flex items-center gap-2">
-      <img src="logo.png" alt="NumNum Logo" class="w-8 h-8 rounded-full shadow-sm object-cover">
-      <div class="flex flex-col items-start leading-none">
-        <h1 class="text-xl font-black text-slate-800 tracking-tight">NumNum</h1>
-        <span class="text-[9px] font-extrabold text-slate-400 tracking-wider">v3.1</span>
-      </div>
+    <div class="flex flex-col items-center leading-none">
+      <h1 class="brand-title text-2xl font-bold tracking-tight">NumNum</h1>
     </div>
-    <button id="btn-restart" class="bg-white border border-slate-300 text-slate-700 w-8 h-8 rounded-full shadow-sm flex items-center justify-center hover:bg-slate-50 active:rotate-180 transition-transform duration-300" title="Restart">
-      <i class="fa-solid fa-rotate-right text-xs"></i>
-    </button>
+    <div class="flex items-center gap-2">
+      <!-- Theme Toggle Button -->
+      <button id="btn-theme" class="card-bg border w-10 h-10 rounded-full shadow-sm flex items-center justify-center active:scale-95 transition" title="Toggle Night Mode">
+        <i id="theme-icon" class="fa-solid fa-moon text-sm"></i>
+      </button>
+      <!-- Restart Button -->
+      <button id="btn-restart" class="card-bg border w-10 h-10 rounded-full shadow-sm flex items-center justify-center active:rotate-180 transition-transform duration-300" title="Restart">
+        <i class="fa-solid fa-rotate-right text-sm"></i>
+      </button>
+    </div>
   </header>
 
   <!-- Score Board -->
-  <div class="w-full max-w-md grid grid-cols-2 gap-3 my-1">
-    <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-200/80 text-center">
-      <p class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Current Score</p>
-      <p id="current-score" class="text-2xl font-black text-indigo-600 mt-0.5">0</p>
+  <div class="w-full max-w-md grid grid-cols-2 gap-3 my-2">
+    <div class="card-bg rounded-3xl p-4 shadow-sm border text-center">
+      <p class="sub-text text-[10px] font-extrabold uppercase tracking-wider">CURRENT SCORE</p>
+      <p id="current-score" class="text-3xl font-black mt-1">0</p>
     </div>
-    <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-200/80 text-center">
-      <p class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Best Score</p>
-      <p id="best-score" class="text-2xl font-black text-emerald-600 mt-0.5">0</p>
+    <div class="card-bg rounded-3xl p-4 shadow-sm border text-center">
+      <p class="sub-text text-[10px] font-extrabold uppercase tracking-wider">BEST SCORE</p>
+      <p id="best-score" class="text-3xl font-black mt-1">0</p>
     </div>
   </div>
 
-  <!-- Stage Indicator -->
+  <!-- Stage Indicator Pill -->
   <div class="my-1 text-center">
-    <span id="stage-display" class="text-xs font-bold uppercase tracking-widest text-slate-500 bg-slate-200/70 px-3 py-1 rounded-full">STAGE 1</span>
+    <span id="stage-display" class="card-bg border text-[11px] font-extrabold uppercase tracking-widest px-4 py-1.5 rounded-full shadow-sm">STAGE 1</span>
   </div>
 
   <!-- Playboard Container -->
-  <main class="w-full max-w-md flex-1 flex flex-col justify-start items-center my-1 relative">
+  <main class="w-full max-w-md flex-1 flex flex-col justify-start items-center my-2 relative">
     
-    <!-- Toast Notification Overlay -->
-    <div id="toast" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none transition-all duration-300 opacity-0 scale-90 bg-slate-900/90 backdrop-blur-md text-white font-bold text-sm px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-2 border border-slate-700/50">
+    <!-- Toast Overlay -->
+    <div id="toast" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none transition-all duration-300 opacity-0 scale-90 bg-[#2D2725]/90 backdrop-blur-md text-white font-bold text-sm px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-2">
       <i class="fa-solid fa-circle-info text-amber-400 text-lg"></i>
       <span id="toast-text">No moves left</span>
     </div>
 
-    <!-- Board Grid -->
-    <div id="grid-wrapper" class="w-full bg-white rounded-2xl p-3 shadow-sm border border-slate-200 overflow-hidden">
-      <div id="game-grid" class="grid grid-cols-9 gap-0 bg-white border border-slate-300 rounded-lg overflow-hidden">
-        <!-- Cells generated by JS -->
+    <!-- Board Grid Container -->
+    <div id="grid-wrapper" class="w-full p-1">
+      <div id="game-grid" class="grid grid-cols-9 gap-1.5 sm:gap-2">
+        <!-- Dynamic tiles -->
       </div>
     </div>
   </main>
 
   <!-- Bottom Action Bar -->
-  <footer class="w-full max-w-md flex justify-between items-center px-4 py-3 bg-white rounded-2xl shadow-sm border border-slate-200 my-2">
-    <!-- Sound Toggle -->
-    <button id="btn-sound" class="flex flex-col items-center gap-1 text-slate-600 hover:text-slate-900 transition active:scale-95">
-      <div class="w-11 h-11 bg-slate-100 rounded-full flex items-center justify-center border border-slate-200 text-slate-700">
-        <i id="sound-icon" class="fa-solid fa-volume-high text-base text-emerald-600"></i>
+  <footer class="w-full max-w-md card-bg rounded-3xl p-4 shadow-sm border my-2 flex justify-around items-center">
+    
+    <!-- Sound Button -->
+    <button id="btn-sound" class="flex flex-col items-center gap-1.5 active:scale-95 transition">
+      <div class="icon-btn-bg w-14 h-14 rounded-full flex items-center justify-center">
+        <i id="sound-icon" class="fa-solid fa-volume-high text-lg"></i>
       </div>
-      <span class="text-[10px] font-bold text-slate-500">Sound</span>
+      <span class="text-xs font-bold">Sound</span>
     </button>
 
     <!-- Hint Button -->
-    <button id="btn-hint" class="flex flex-col items-center gap-1 text-slate-600 hover:text-slate-900 transition active:scale-95 relative">
-      <div class="w-12 h-12 bg-amber-500 text-white rounded-full flex items-center justify-center shadow-md shadow-amber-500/20 text-lg font-bold">
+    <button id="btn-hint" class="flex flex-col items-center gap-1.5 active:scale-95 transition">
+      <div class="accent-btn w-14 h-14 rounded-full flex items-center justify-center text-xl shadow-sm">
         <i class="fa-solid fa-lightbulb"></i>
       </div>
-      <span class="text-[10px] font-bold text-slate-500">Hint</span>
+      <span class="text-xs font-bold">Hint</span>
     </button>
 
     <!-- Add Numbers Button -->
-    <button id="btn-add" class="flex flex-col items-center gap-1 text-slate-600 hover:text-slate-900 transition active:scale-95 relative">
-      <div class="w-12 h-12 bg-amber-500 text-white rounded-full flex items-center justify-center shadow-md shadow-amber-500/20 text-lg font-bold">
+    <button id="btn-add" class="flex flex-col items-center gap-1.5 active:scale-95 transition relative">
+      <div class="accent-btn w-14 h-14 rounded-full flex items-center justify-center text-xl shadow-sm">
         <i class="fa-solid fa-plus"></i>
       </div>
-      <span id="add-badge" class="absolute -top-1 right-1 bg-slate-800 text-white text-[10px] font-extrabold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm">5</span>
-      <span class="text-[10px] font-bold text-slate-500">Add</span>
+      <span id="add-badge" class="absolute top-0 right-0 bg-[#3D3532] text-white text-[10px] font-extrabold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm">5</span>
+      <span class="text-xs font-bold">Add</span>
     </button>
   </footer>
 
   <!-- Subtle Version Footer -->
-  <div class="text-[10px] font-semibold text-slate-400 mb-1">
-    NumNum PWA v3.1
+  <div class="sub-text text-[10px] font-extrabold mb-1 tracking-wider">
+    NumNum PWA v3.3
   </div>
 
   <!-- Modal: How To Play -->
-  <div id="modal-help" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl text-center border border-slate-100 relative">
-      <img src="logo.png" alt="NumNum" class="w-16 h-16 rounded-2xl mx-auto mb-2 shadow-md">
-      <h2 class="text-xl font-extrabold text-slate-800 mb-1">How to Play NumNum</h2>
-      <p class="text-[10px] font-bold text-slate-400 mb-3">Version 3.1</p>
-      <div class="text-xs text-slate-600 space-y-2 text-left bg-slate-50 p-4 rounded-2xl mb-5 border border-slate-100 leading-relaxed">
+  <div id="modal-help" class="fixed inset-0 z-50 bg-[#2D2725]/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="card-bg rounded-3xl p-6 max-w-sm w-full shadow-2xl text-center border relative">
+      <h2 class="brand-title text-2xl font-bold mb-1">How to Play NumNum</h2>
+      <p class="sub-text text-[10px] font-bold mb-3">Version 3.3</p>
+      <div class="icon-btn-bg text-xs space-y-2 text-left p-4 rounded-2xl mb-5 leading-relaxed">
         <p>• <strong>Match Pairs:</strong> Select 2 numbers that are equal (e.g. 3 & 3) or add up to 10 (e.g. 7 & 3).</p>
         <p>• <strong>Directions:</strong> Matches can be horizontal, vertical, diagonal, or wrapped from row to row.</p>
         <p>• <strong>Stage Progression:</strong> Starts with 36 tiles in Stage 1 and adds 2 extra tiles every stage!</p>
-        <p>• <strong>Auto-Save:</strong> Game state, sound preferences, and remaining add charges auto-save continuously.</p>
+        <p>• <strong>Night Palette:</strong> Toggle between the Standard Pastel and Night Saturated palettes anytime.</p>
       </div>
-      <button id="close-help" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-2xl shadow-lg shadow-emerald-500/20 transition active:scale-95">Got it!</button>
+      <button id="close-help" class="w-full bg-[#3D3532] hover:bg-[#2D2725] text-white font-bold py-3.5 rounded-2xl shadow-lg transition active:scale-95">Got it!</button>
     </div>
   </div>
 
-  <!-- Modal: Game Finished / Victory -->
-  <div id="modal-win" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl text-center border border-slate-100">
-      <img src="logo.png" alt="NumNum" class="w-16 h-16 rounded-2xl mx-auto mb-3 shadow-md">
-      <h2 class="text-2xl font-black text-slate-800">Stage Cleared!</h2>
-      <p class="text-xs text-slate-500 mt-1 mb-4">Awesome job! Ready for more tiles?</p>
-      <div class="bg-slate-50 p-3 rounded-2xl mb-5 border border-slate-100">
-        <p class="text-[10px] font-bold text-slate-400 uppercase">Total Score</p>
-        <p id="win-score-display" class="text-3xl font-black text-emerald-600">0</p>
+  <!-- Modal: Victory -->
+  <div id="modal-win" class="fixed inset-0 z-50 bg-[#2D2725]/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="card-bg rounded-3xl p-6 max-w-sm w-full shadow-2xl text-center border">
+      <h2 class="brand-title text-2xl font-bold">Stage Cleared!</h2>
+      <p class="sub-text text-xs mt-1 mb-4">Awesome job! Ready for more tiles?</p>
+      <div class="icon-btn-bg p-3 rounded-2xl mb-5">
+        <p class="sub-text text-[10px] font-bold uppercase">Total Score</p>
+        <p id="win-score-display" class="text-3xl font-black mt-1">0</p>
       </div>
-      <button id="btn-next-level" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-2xl shadow-lg shadow-emerald-500/20 transition active:scale-95">Next Level</button>
+      <button id="btn-next-level" class="w-full bg-[#BFE3B4] text-[#1E1A18] font-bold py-3.5 rounded-2xl shadow-md transition active:scale-95">Next Level</button>
     </div>
   </div>
 
-  <!-- Modal: Game Over / Loss -->
-  <div id="modal-lose" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl text-center border border-slate-100">
-      <div class="w-16 h-16 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-3">
+  <!-- Modal: Game Over -->
+  <div id="modal-lose" class="fixed inset-0 z-50 bg-[#2D2725]/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="card-bg rounded-3xl p-6 max-w-sm w-full shadow-2xl text-center border">
+      <div class="w-16 h-16 bg-[#F6B8B0]/50 text-[#3D3532] rounded-full flex items-center justify-center text-3xl mx-auto mb-3">
         <i class="fa-solid fa-ghost"></i>
       </div>
-      <h2 class="text-2xl font-black text-slate-800">Game Over!</h2>
-      <p class="text-xs text-slate-500 mt-1 mb-4">No more moves or add charges left.</p>
-      <button id="btn-new-game" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-2xl shadow-lg shadow-slate-800/20 transition active:scale-95">New Game</button>
+      <h2 class="brand-title text-2xl font-bold">Game Over!</h2>
+      <p class="sub-text text-xs mt-1 mb-4">No more moves or add charges left.</p>
+      <button id="btn-new-game" class="w-full bg-[#3D3532] text-white font-bold py-3.5 rounded-2xl shadow-md transition active:scale-95">New Game</button>
     </div>
   </div>
 
   <script>
-    // PWA Service Worker Registration
+    // PWA Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js').catch(err => console.log('SW reg error: ', err));
       });
     }
 
-    // Web Audio Synthesizer
+    // Web Audio
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     let soundEnabled = true;
 
@@ -267,13 +326,35 @@
       } catch (e) {}
     }
 
-    // Toggle Sound UI
+    // Theme Switcher Logic
+    let isNightMode = localStorage.getItem('numnum_night_mode') === 'true';
+
+    function applyTheme() {
+      const themeIcon = document.getElementById('theme-icon');
+      if (isNightMode) {
+        document.body.classList.remove('theme-light');
+        document.body.classList.add('theme-night');
+        themeIcon.className = 'fa-solid fa-sun text-sm text-amber-400';
+      } else {
+        document.body.classList.remove('theme-night');
+        document.body.classList.add('theme-light');
+        themeIcon.className = 'fa-solid fa-moon text-sm text-stone-600';
+      }
+    }
+
+    document.getElementById('btn-theme').addEventListener('click', () => {
+      isNightMode = !isNightMode;
+      localStorage.setItem('numnum_night_mode', isNightMode.toString());
+      applyTheme();
+      saveGameState();
+    });
+
     function updateSoundUI() {
       const icon = document.getElementById('sound-icon');
       if (soundEnabled) {
-        icon.className = 'fa-solid fa-volume-high text-base text-emerald-600';
+        icon.className = 'fa-solid fa-volume-high text-lg';
       } else {
-        icon.className = 'fa-solid fa-volume-xmark text-base text-slate-400';
+        icon.className = 'fa-solid fa-volume-xmark text-lg opacity-40';
       }
     }
 
@@ -283,7 +364,7 @@
       saveGameState();
     });
 
-    // Game State Variables
+    // Game Variables
     const COLS = 9;
     let board = [];
     let selectedIndex = null;
@@ -302,14 +383,15 @@
     const toast = document.getElementById('toast');
     const toastText = document.getElementById('toast-text');
 
-    // --- SAVE / LOAD GAME STATE MECHANICS ---
+    // Save & Load State
     function saveGameState() {
       const state = {
         board,
         addCharges,
         score,
         stage,
-        soundEnabled
+        soundEnabled,
+        isNightMode
       };
       localStorage.setItem('numnum_saved_state', JSON.stringify(state));
     }
@@ -329,7 +411,9 @@
           score = state.score ?? 0;
           stage = state.stage ?? 1;
           soundEnabled = state.soundEnabled ?? true;
+          if (state.isNightMode !== undefined) isNightMode = state.isNightMode;
           
+          applyTheme();
           updateSoundUI();
           return true;
         }
@@ -339,17 +423,11 @@
       return false;
     }
 
-    // Auto-Save when losing focus or closing tab/app
     window.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') {
-        saveGameState();
-      }
+      if (document.visibilityState === 'hidden') saveGameState();
     });
-    window.addEventListener('pagehide', () => {
-      saveGameState();
-    });
+    window.addEventListener('pagehide', () => saveGameState());
 
-    // Display Toast
     function showToast(msg) {
       if (toastTimeout) clearTimeout(toastTimeout);
       toastText.textContent = msg;
@@ -362,7 +440,6 @@
       }, 3500);
     }
 
-    // Generate Solvable Board
     function generateSolvableBoard(currentStage) {
       const totalTiles = 36 + (currentStage - 1) * 2;
       const totalPairs = totalTiles / 2;
@@ -387,7 +464,6 @@
       return numbers.map(val => ({ val, cleared: false }));
     }
 
-    // Initialize Game
     function initGame(keepScore = false) {
       if (!keepScore) {
         score = 0;
@@ -402,7 +478,6 @@
       checkBoardState();
     }
 
-    // Next Level
     function nextLevel() {
       stage++;
       addCharges = 5;
@@ -421,12 +496,10 @@
       addBadge.textContent = addCharges;
     }
 
-    // Check Pair Validity
     function isValidMatch(val1, val2) {
       return val1 === val2 || (val1 + val2 === 10);
     }
 
-    // Find Active Matches
     function findAllMatches() {
       const activeIndices = [];
       for (let i = 0; i < board.length; i++) {
@@ -451,7 +524,6 @@
       return matches;
     }
 
-    // Check Path Clear
     function isPathClear(idx1, idx2) {
       if (idx1 > idx2) [idx1, idx2] = [idx2, idx1];
 
@@ -500,40 +572,38 @@
       return false;
     }
 
-    // Render Board
     function renderBoard() {
       gridEl.innerHTML = '';
       
-      const minRows = 10;
+      const minRows = 6;
       const totalRows = Math.max(minRows, Math.ceil(board.length / COLS));
       const totalCells = totalRows * COLS;
 
       for (let i = 0; i < totalCells; i++) {
         const btn = document.createElement('button');
-        btn.className = 'grid-cell flex items-center justify-center font-bold text-lg select-none transition-all duration-150';
+        btn.className = 'grid-cell flex items-center justify-center font-black text-xl select-none';
 
         if (i < board.length) {
           const item = board[i];
           if (item.cleared) {
             btn.textContent = item.val;
-            btn.className += ' text-slate-200 bg-slate-50 cursor-default font-normal';
+            btn.className += ' tile-cleared cursor-default';
           } else {
             btn.textContent = item.val;
-            btn.className += ' text-slate-800 bg-white font-black hover:bg-slate-100 active:scale-95 shadow-sm';
+            btn.className += ` tile-${item.val} hover:brightness-95 active:scale-90 shadow-sm`;
             if (selectedIndex === i) {
               btn.classList.add('cell-selected');
             }
             btn.addEventListener('click', () => handleCellClick(i));
           }
         } else {
-          btn.className += ' bg-white border-slate-200 cursor-default opacity-40';
+          btn.className += ' slot-empty cursor-default opacity-50';
         }
 
         gridEl.appendChild(btn);
       }
     }
 
-    // Cell Click Event
     function handleCellClick(idx) {
       if (board[idx].cleared) return;
 
@@ -577,7 +647,6 @@
       }
     }
 
-    // Check & Remove Completely Cleared Rows
     function checkAndRemoveFullRows() {
       let rowsRemoved = false;
       let r = 0;
@@ -604,7 +673,6 @@
       if (rowsRemoved) playSound('lineClear');
     }
 
-    // Check Game Status & Toast Trigger
     function checkBoardState() {
       const active = board.filter(b => !b.cleared);
 
@@ -628,7 +696,6 @@
       }
     }
 
-    // Add Charges Handler (+)
     document.getElementById('btn-add').addEventListener('click', () => {
       if (addCharges <= 0) return;
 
@@ -646,12 +713,10 @@
       checkBoardState();
     });
 
-    // Clear Hints
     function clearHints() {
       document.querySelectorAll('.cell-hint').forEach(el => el.classList.remove('cell-hint'));
     }
 
-    // Hint Button Handler
     document.getElementById('btn-hint').addEventListener('click', () => {
       clearHints();
       const matches = findAllMatches();
@@ -667,7 +732,6 @@
       }
     });
 
-    // Modals Handlers
     document.getElementById('btn-how-to').addEventListener('click', () => {
       document.getElementById('modal-help').classList.remove('hidden');
     });
@@ -686,7 +750,8 @@
       initGame(false);
     });
 
-    // Startup Execution: Restore saved session if available, otherwise fresh game
+    applyTheme();
+
     if (loadGameState()) {
       updateHeader();
       renderBoard();
