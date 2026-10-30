@@ -51,7 +51,10 @@
     </button>
     <div class="flex items-center gap-2">
       <img src="logo.png" alt="NumNum Logo" class="w-8 h-8 rounded-full shadow-sm object-cover">
-      <h1 class="text-xl font-black text-slate-800 tracking-tight">NumNum</h1>
+      <div class="flex flex-col items-start leading-none">
+        <h1 class="text-xl font-black text-slate-800 tracking-tight">NumNum</h1>
+        <span class="text-[9px] font-extrabold text-slate-400 tracking-wider">v3.1</span>
+      </div>
     </div>
     <button id="btn-restart" class="bg-white border border-slate-300 text-slate-700 w-8 h-8 rounded-full shadow-sm flex items-center justify-center hover:bg-slate-50 active:rotate-180 transition-transform duration-300" title="Restart">
       <i class="fa-solid fa-rotate-right text-xs"></i>
@@ -78,7 +81,7 @@
   <!-- Playboard Container -->
   <main class="w-full max-w-md flex-1 flex flex-col justify-start items-center my-1 relative">
     
-    <!-- Toast Notification Overlay (Center of Playboard) -->
+    <!-- Toast Notification Overlay -->
     <div id="toast" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none transition-all duration-300 opacity-0 scale-90 bg-slate-900/90 backdrop-blur-md text-white font-bold text-sm px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-2 border border-slate-700/50">
       <i class="fa-solid fa-circle-info text-amber-400 text-lg"></i>
       <span id="toast-text">No moves left</span>
@@ -120,16 +123,22 @@
     </button>
   </footer>
 
+  <!-- Subtle Version Footer -->
+  <div class="text-[10px] font-semibold text-slate-400 mb-1">
+    NumNum PWA v3.1
+  </div>
+
   <!-- Modal: How To Play -->
   <div id="modal-help" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl text-center border border-slate-100 relative">
       <img src="logo.png" alt="NumNum" class="w-16 h-16 rounded-2xl mx-auto mb-2 shadow-md">
-      <h2 class="text-xl font-extrabold text-slate-800 mb-3">How to Play NumNum</h2>
+      <h2 class="text-xl font-extrabold text-slate-800 mb-1">How to Play NumNum</h2>
+      <p class="text-[10px] font-bold text-slate-400 mb-3">Version 3.1</p>
       <div class="text-xs text-slate-600 space-y-2 text-left bg-slate-50 p-4 rounded-2xl mb-5 border border-slate-100 leading-relaxed">
         <p>• <strong>Match Pairs:</strong> Select 2 numbers that are equal (e.g. 3 & 3) or add up to 10 (e.g. 7 & 3).</p>
         <p>• <strong>Directions:</strong> Matches can be horizontal, vertical, diagonal, or wrapped from row to row.</p>
         <p>• <strong>Stage Progression:</strong> Starts with 36 tiles in Stage 1 and adds 2 extra tiles every stage!</p>
-        <p>• <strong>Auto-Save:</strong> Your exact progress is automatically saved so you can resume anytime!</p>
+        <p>• <strong>Auto-Save:</strong> Game state, sound preferences, and remaining add charges auto-save continuously.</p>
       </div>
       <button id="close-help" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-2xl shadow-lg shadow-emerald-500/20 transition active:scale-95">Got it!</button>
     </div>
@@ -258,15 +267,19 @@
       } catch (e) {}
     }
 
-    // Toggle Sound
-    document.getElementById('btn-sound').addEventListener('click', () => {
-      soundEnabled = !soundEnabled;
+    // Toggle Sound UI
+    function updateSoundUI() {
       const icon = document.getElementById('sound-icon');
       if (soundEnabled) {
         icon.className = 'fa-solid fa-volume-high text-base text-emerald-600';
       } else {
         icon.className = 'fa-solid fa-volume-xmark text-base text-slate-400';
       }
+    }
+
+    document.getElementById('btn-sound').addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      updateSoundUI();
       saveGameState();
     });
 
@@ -317,12 +330,7 @@
           stage = state.stage ?? 1;
           soundEnabled = state.soundEnabled ?? true;
           
-          const icon = document.getElementById('sound-icon');
-          if (soundEnabled) {
-            icon.className = 'fa-solid fa-volume-high text-base text-emerald-600';
-          } else {
-            icon.className = 'fa-solid fa-volume-xmark text-base text-slate-400';
-          }
+          updateSoundUI();
           return true;
         }
       } catch(e) {
@@ -361,7 +369,7 @@
       const numbers = [];
 
       for (let i = 0; i < totalPairs; i++) {
-        const val1 = Math.floor(Math.random() * 9) + 1; // 1-9
+        const val1 = Math.floor(Math.random() * 9) + 1;
         let val2;
         if (Math.random() < 0.5) {
           val2 = val1;
@@ -463,19 +471,17 @@
       const dc = c2 - c1;
 
       if (r1 === r2) {
-        let clear = true;
         for (let c = c1 + 1; c < c2; c++) {
           if (!board[r1 * COLS + c].cleared) return false;
         }
-        return clear;
+        return true;
       }
 
       if (c1 === c2) {
-        let clear = true;
         for (let r = r1 + 1; r < r2; r++) {
           if (!board[r * COLS + c1].cleared) return false;
         }
-        return clear;
+        return true;
       }
 
       if (Math.abs(dr) === Math.abs(dc)) {
