@@ -25,20 +25,24 @@
       transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    /* Light Theme (Default) */
+    /* Light Theme (Default) - Pairing matching sum/equal numbers with harmonic tonal shades */
     body.theme-light {
       background-color: #FBF3EB;
       color: #3D3532;
     }
-    .theme-light .tile-1 { background-color: #F6B8B0; color: #2D2725; }
-    .theme-light .tile-2 { background-color: #F9D3A0; color: #2D2725; }
-    .theme-light .tile-3 { background-color: #F3E6A0; color: #2D2725; }
-    .theme-light .tile-4 { background-color: #BFE3B4; color: #2D2725; }
-    .theme-light .tile-5 { background-color: #A9DDD6; color: #2D2725; }
-    .theme-light .tile-6 { background-color: #AECBF2; color: #2D2725; }
-    .theme-light .tile-7 { background-color: #C8BDF0; color: #2D2725; }
-    .theme-light .tile-8 { background-color: #EEB8DC; color: #2D2725; }
-    .theme-light .tile-9 { background-color: #D8C3B0; color: #2D2725; }
+    .theme-light .tile-1 { background-color: #F6B8B0; color: #2D2725; } /* Coral (pairs with 9) */
+    .theme-light .tile-9 { background-color: #E6A296; color: #2D2725; } /* Darker Coral/Terracotta */
+
+    .theme-light .tile-2 { background-color: #F9D3A0; color: #2D2725; } /* Apricot (pairs with 8) */
+    .theme-light .tile-8 { background-color: #E8B478; color: #2D2725; } /* Richer Warm Amber */
+
+    .theme-light .tile-3 { background-color: #F3E6A0; color: #2D2725; } /* Butter (pairs with 7) */
+    .theme-light .tile-7 { background-color: #D4C375; color: #2D2725; } /* Deep Olive/Mustard Gold */
+
+    .theme-light .tile-4 { background-color: #BFE3B4; color: #2D2725; } /* Sage (pairs with 6) */
+    .theme-light .tile-6 { background-color: #8CC47E; color: #2D2725; } /* Vibrant Forest Sage */
+
+    .theme-light .tile-5 { background-color: #A9DDD6; color: #2D2725; } /* Aqua (self-pairing 5+5=10) */
 
     .theme-light .tile-cleared { background-color: #EFE4D8 !important; color: #B2A8A2 !important; }
     .theme-light .slot-empty { border: 2px dashed #E5D7CA; }
@@ -47,20 +51,24 @@
     .theme-light .icon-btn-bg { background-color: #F2E8DF; color: #5C504A; }
     .theme-light .accent-btn { background-color: #EEAD8A; color: #FFFFFF; }
 
-    /* Night Theme (Saturated Palette - Variant C) */
+    /* Night Theme (Saturated Palette - Variant C with tonal pairing shades) */
     body.theme-night {
       background-color: #231F20;
       color: #F5EBE6;
     }
-    .theme-night .tile-1 { background-color: #F28C82; color: #1E1A18; }
-    .theme-night .tile-2 { background-color: #F5B35E; color: #1E1A18; }
-    .theme-night .tile-3 { background-color: #E8D45E; color: #1E1A18; }
-    .theme-night .tile-4 { background-color: #86CC7A; color: #1E1A18; }
-    .theme-night .tile-5 { background-color: #5CC8BC; color: #1E1A18; }
-    .theme-night .tile-6 { background-color: #7AAEF0; color: #1E1A18; }
-    .theme-night .tile-7 { background-color: #A594F0; color: #1E1A18; }
-    .theme-night .tile-8 { background-color: #EC8CC8; color: #1E1A18; }
-    .theme-night .tile-9 { background-color: #C4A58A; color: #1E1A18; }
+    .theme-night .tile-1 { background-color: #F28C82; color: #1E1A18; } /* Coral (pairs with 9) */
+    .theme-night .tile-9 { background-color: #D96E64; color: #1E1A18; } /* Deep Coral */
+
+    .theme-night .tile-2 { background-color: #F5B35E; color: #1E1A18; } /* Apricot (pairs with 8) */
+    .theme-night .tile-8 { background-color: #D48E38; color: #1E1A18; } /* Rich Amber */
+
+    .theme-night .tile-3 { background-color: #E8D45E; color: #1E1A18; } /* Butter (pairs with 7) */
+    .theme-night .tile-7 { background-color: #C2AB38; color: #1E1A18; } /* Deep Golden Mustard */
+
+    .theme-night .tile-4 { background-color: #86CC7A; color: #1E1A18; } /* Sage (pairs with 6) */
+    .theme-night .tile-6 { background-color: #5FA852; color: #1E1A18; } /* Forest Green */
+
+    .theme-night .tile-5 { background-color: #5CC8BC; color: #1E1A18; } /* Aqua (self-pairing 5+5=10) */
 
     .theme-night .tile-cleared { background-color: #36302E !important; color: #6E6460 !important; }
     .theme-night .slot-empty { border: 2px dashed #3D3532; }
@@ -157,9 +165,9 @@
   <main class="w-full max-w-md flex-1 flex flex-col justify-start items-center my-2 relative">
     
     <!-- Toast Overlay -->
-    <div id="toast" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none transition-all duration-300 opacity-0 scale-90 bg-[#2D2725]/90 backdrop-blur-md text-white font-bold text-sm px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-2">
-      <i class="fa-solid fa-circle-info text-amber-400 text-lg"></i>
-      <span id="toast-text">No moves left</span>
+    <div id="toast" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none transition-all duration-300 opacity-0 scale-90 bg-[#2D2725]/95 backdrop-blur-md text-white font-bold text-sm px-6 py-3.5 rounded-2xl shadow-2xl flex items-center gap-2.5 text-center">
+      <i class="fa-solid fa-lightbulb text-amber-400 text-lg animate-bounce"></i>
+      <span id="toast-text">No moves left, add some numbers!</span>
     </div>
 
     <!-- Board Grid Container -->
@@ -201,20 +209,20 @@
 
   <!-- Subtle Version Footer -->
   <div class="sub-text text-[10px] font-extrabold mb-1 tracking-wider">
-    NumNum PWA v3.4
+    NumNum PWA v3.5
   </div>
 
   <!-- Modal: How To Play -->
   <div id="modal-help" class="fixed inset-0 z-50 bg-[#2D2725]/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="card-bg rounded-3xl p-6 max-w-sm w-full shadow-2xl text-center border relative">
       <h2 class="brand-title text-2xl font-bold mb-1">How to Play NumNum</h2>
-      <p class="sub-text text-[10px] font-bold mb-3">Version 3.4</p>
+      <p class="sub-text text-[10px] font-bold mb-3">Version 3.5</p>
       <div class="icon-btn-bg text-xs space-y-2 text-left p-4 rounded-2xl mb-5 leading-relaxed">
         <p>• <strong>Match Pairs:</strong> Select 2 numbers that are equal (e.g. 3 & 3) or add up to 10 (e.g. 7 & 3).</p>
+        <p>• <strong>Color Pairs:</strong> Matching pairs share harmonious chromatic family shades (e.g. 1 & 9, 2 & 8, 3 & 7, 4 & 6).</p>
         <p>• <strong>Directions:</strong> Matches can be horizontal, vertical, diagonal, or wrapped from row to row.</p>
         <p>• <strong>Undo Move:</strong> Made a mistake? Tap the <strong><i class="fa-solid fa-rotate-left"></i> Undo</strong> button to revert your last move!</p>
-        <p>• <strong>Stage Progression:</strong> Starts with 36 tiles in Stage 1 and adds 2 extra tiles every stage!</p>
-        <p>• <strong>Night Palette:</strong> Toggle between the Standard Pastel and Night Saturated palettes anytime.</p>
+        <p>• <strong>Add Numbers:</strong> Out of moves? Tap <strong>+ Add</strong> to duplicate remaining numbers and keep playing.</p>
       </div>
       <button id="close-help" class="w-full bg-[#3D3532] hover:bg-[#2D2725] text-white font-bold py-3.5 rounded-2xl shadow-lg transition active:scale-95">Got it!</button>
     </div>
@@ -747,7 +755,7 @@
           playSound('lose');
           document.getElementById('modal-lose').classList.remove('hidden');
         } else {
-          showToast("No moves left");
+          showToast("No moves left, add some numbers!");
         }
       }
     }
@@ -801,7 +809,7 @@
         if (cells[idx1]) cells[idx1].classList.add('cell-hint');
         if (cells[idx2]) cells[idx2].classList.add('cell-hint');
       } else {
-        showToast("No moves left");
+        showToast("No moves left, add some numbers!");
       }
     });
 
